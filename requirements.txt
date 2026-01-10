@@ -1,0 +1,9 @@
+torch
+torchvision
+uv
+matplotlib
+networkx
+tqdm
+pyyaml
+tensorboard
+huggingface-hub

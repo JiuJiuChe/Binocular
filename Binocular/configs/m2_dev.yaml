@@ -1,0 +1,48 @@
+# M2 MacBook Pro Development Configuration
+# Purpose: Quick iteration and validation on M2 hardware
+# Model: DINOv2-ViT-S/14 (smallest/fastest variant)
+
+model:
+  encoder_type: dinov2
+  encoder_name: dinov2_vitb14  # Smallest DINOv2 variant (22M params, 384-dim)
+  freeze_encoder: true
+  classifier_type: linear
+  classifier_dropout: 0.0
+
+data:
+  dataset_root: Binocular/datasets/nabirds/data
+  image_size: 224
+  batch_size: 32  # Conservative for M2 memory
+  num_workers: 4  # M2 has 8 performance cores
+  use_bbox_crop: true
+  pin_memory: false  # MPS doesn't benefit from pinned memory
+
+training:
+  epochs: 50  # Shorter for quick validation
+  learning_rate: 0.001
+  optimizer: adamw
+  weight_decay: 0.01
+  gradient_clip_norm: 1.0
+  warmup_epochs: 2
+  device: mps  # M2 Metal Performance Shaders backend
+  mixed_precision: false  # MPS doesn't support torch.cuda.amp
+  seed: 42
+
+scheduler:
+  scheduler_type: cosine
+  min_lr: 1.0e-6
+
+logging:
+  log_dir: Binocular/artifacts/runs
+  checkpoint_dir: Binocular/artifacts/checkpoints
+  experiment_name: dinov2_vitb14_m2_dev
+  log_every_n_steps: 50
+  checkpoint_every_n_epochs: 10
+
+eval:
+  val_every_n_epochs: 1
+  save_best_only: false
+
+debug:
+  debug_overfit_batch: false
+  debug_num_batches: null
