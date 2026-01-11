@@ -6,38 +6,52 @@ This project provides a pretrained, species-level bird classifier for North Amer
 
 The model can be easily loaded and used for inference directly from the [Hugging Face Hub](https://huggingface.co/jiujiuche/Binocular).
 
-## Quick Start: Inference with a Pretrained Model
+## Quick Start: Inference with the Published Package
 
 Get predictions from the pretrained model in just a few lines of code.
 
-### 1. Setup
+### 1. Installation
 
-First, set up the environment and install the required dependencies.
+Install the package directly from PyPI:
 
 ```bash
-# Clone the repository
-git clone https://github.com/jiujiuche/Binocular.git
-cd Binocular
-
-# Create a virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
+pip install binocular-birds
 ```
 
-### 2. Run Inference
+### 2. Run Inference from the Command Line
 
-Use the example script to run inference on an image of your choice. The script will automatically download the pretrained model from the Hugging Face Hub.
+After installation, you can use the `predict_hf` command-line tool to run inference on an image. The tool will automatically download the pretrained model from the Hugging Face Hub.
 
 ```bash
-python Binocular/examples/huggingface_inference.py \
-    --repo-id "jiujiuche/Binocular" \
-    --image "path/to/your/bird_image.jpg"
+predict_hf --image "path/to/your/bird_image.jpg"
 ```
 
 The output will be a list of the top 5 predicted bird species and their confidence scores.
+
+### 3. Run Inference in Python
+
+You can also use the `InferenceModel` in your own Python scripts:
+
+```python
+from Binocular.models.inference import InferenceModel
+from PIL import Image
+
+# Initialize the model from Hugging Face
+model = InferenceModel.from_pretrained(
+    repo_id="jiujiuche/artifacts",
+    filename="dinov2_vitb14_nabirds.pth"
+)
+
+# Open an image
+img = Image.open("path/to/your/bird_image.jpg")
+
+# Get predictions
+predictions = model.predict(img, top_k=5)
+
+# Print the results
+for species, confidence in predictions:
+    print(f"{species}: {confidence:.2%}")
+```
 
 ## Training (Optional)
 
@@ -81,7 +95,7 @@ Binocular/
 - **huggingface-hub**
 - **Pillow**, **tqdm**, **numpy**, etc.
 
-See [`requirements.txt`](./requirements.txt) for the complete list.
+See [`pyproject.toml`](./pyproject.toml) for the complete list.
 
 ## License
 
